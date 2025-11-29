@@ -44,6 +44,7 @@ android {
 dependencies {
 
     // Core Android
+    implementation(libs.play.services.wearable.v1810)
     implementation(libs.androidx.core.ktx.v1120)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

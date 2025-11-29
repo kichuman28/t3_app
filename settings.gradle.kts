@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "T3Detector"
 include(":app")
- 
+include(":alarm")

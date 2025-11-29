@@ -31,6 +31,7 @@ class AudioDetectionService : Service() {
     private val recordingLength = 48000
     private lateinit var audioRecorder: AudioRecord
     private lateinit var tfliteHelper: TfliteHelper
+    private lateinit var wearableSender: WearableSender
 
     private var job: Job? = null
     private var isRunning = false
@@ -59,6 +60,7 @@ class AudioDetectionService : Service() {
         )
 
         tfliteHelper = TfliteHelper(this)
+        wearableSender = WearableSender(this)
 
         job = CoroutineScope(Dispatchers.Default).launch { processAudioLoop() }
     }
@@ -95,10 +97,25 @@ class AudioDetectionService : Service() {
                 val (label, conf) = tfliteHelper.runInference(floatBuf)
                 Log.d("T3Service", "Detected: $label  conf=${"%.2f".format(conf)}")
 
+                // --- FIX STARTS HERE ---
                 if (label == "T3" && conf > 0.85f) {
+                    Log.d("T3Service", "🔥 T3 DETECTED. Triggering Watch.")
+
+                    // 1. Notify Phone
                     val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                    nm.notify(100, buildNotification("🚨 T3 Alarm DETECTED! (${"%.0f".format(conf * 100)}%)"))
+                    nm.notify(100, buildNotification("🚨 T3 Alarm DETECTED! (${"%.0f".format(conf * 100)}%)."))
+
+                    // 2. Notify Watch (Only when T3 is detected)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        wearableSender.sendAlarmToWatch()
+                    }
+
+                    // 3. Delay (Only delay if we found an alarm, to prevent spamming vibrations)
+                    delay(3000)
                 }
+                // --- FIX ENDS HERE ---
+
+                // If no alarm is detected, the loop continues immediately to capture the next second of audio.
             }
         } catch (e: Exception) {
             Log.e("T3Service", "Error in audio loop", e)
@@ -111,7 +128,6 @@ class AudioDetectionService : Service() {
             }
         }
     }
-
     // ... (rest of the file remains the same: stopDetection, onDestroy, onBind, etc.) ...
 
     fun stopDetection() {
