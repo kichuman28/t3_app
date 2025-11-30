@@ -3,6 +3,9 @@
 This project is an Android-based safety system designed to detect **T3 Fire Alarm patterns** (Temporal 3) using on-device Machine Learning (TensorFlow Lite). When the alarm pattern is detected by the phone, it automatically triggers a strong haptic vibration alert on a paired Samsung Galaxy Watch 4 (Wear OS).
 
 ![img.png](img.png)
+![WhatsApp Image 2025-11-30 at 11 15 08_8982c90e](https://github.com/user-attachments/assets/450f4b27-e19a-4d78-8ee7-fab8538b3d8b)
+![WhatsApp Image 2025-11-30 at 11 15 09_5093a213](https://github.com/user-attachments/assets/7e82c967-e29f-4998-8f6e-d27baaedbc7d)
+
 
 ## 📂 Project Structure
 
